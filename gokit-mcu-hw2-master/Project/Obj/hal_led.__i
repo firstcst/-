@@ -1,0 +1,6 @@
+-c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork -I ..\Lib\STM32F10x_StdPeriph_Driver\inc -I ..\Lib\CMSIS\CM3\CoreSupport -I ..\Lib\CMSIS\CM3\DeviceSupport\ST\STM32F10x -I ..\User -I ..\Hal -I ..\Protocol --c99
+-IG:\Workspace\»úÖÇÔÆ\gokit-mcu-hw2-master\Project\RTE\_gokit_stm32
+-IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.0.0\CMSIS\Include
+-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include
+-D__UVISION_VERSION="522" -D_RTE_ -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD -DMOTOR_16
+-o .\obj\hal_led.o --omf_browse .\obj\hal_led.crf --depend .\obj\hal_led.d "..\Hal\Hal_led\Hal_led.c"
