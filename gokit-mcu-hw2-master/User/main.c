@@ -46,11 +46,11 @@ int main(void)
 	HW_Init();
 	Printf_SystemRccClocks();
 	SW_Init();
-	while(1)
+/*	while(1)
 	{
 	IR_Handle();
-	}
-	#if 0
+	}*/
+	#if 1
 	while(1)
 	{
 	uint8_t Key_return=0;
@@ -88,6 +88,7 @@ if(Key_return & KEY_UP)
 			}
 		}
 	}
+			IR_Handle();
 }
 	#endif
 }
