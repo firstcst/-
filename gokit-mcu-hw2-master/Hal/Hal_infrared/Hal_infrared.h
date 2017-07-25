@@ -10,7 +10,7 @@
 
 void IR_Init(void);
 bool IR_Handle(void);
-
+void RGB_Infrared(void);
 #endif /*_HAL_INFRARED_H*/
 
 

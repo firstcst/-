@@ -31,3 +31,5 @@
 .\obj\delay.o: ..\Lib\STM32F10x_StdPeriph_Driver\inc\misc.h
 .\obj\delay.o: ..\Hal\Hal_key/Hal_key.h
 .\obj\delay.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\obj\delay.o: ..\Hal\Hal_infrared/Hal_infrared.h
+.\obj\delay.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h

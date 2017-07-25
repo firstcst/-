@@ -46,7 +46,11 @@ int main(void)
 	HW_Init();
 	Printf_SystemRccClocks();
 	SW_Init();
- // uint8_t Key1_count=0;	
+	while(1)
+	{
+	IR_Handle();
+	}
+	#if 0
 	while(1)
 	{
 	uint8_t Key_return=0;
@@ -69,7 +73,6 @@ if(Key_return & KEY_UP)
 				    BREAK_KEY;
 						printf("the LED IS RUNNING ok!\r\n");
 			}
-
 		}
 		else
 		{
@@ -86,6 +89,7 @@ if(Key_return & KEY_UP)
 		}
 	}
 }
+	#endif
 }
 /** @addtogroup GizWits_HW_Init
   * @{
