@@ -44,6 +44,10 @@ void GizWits_GatherSensorData(void);
 void GizWits_ControlDeviceHandle(void);
 void SW_Init(void);
 void KEY_Handle(void);
+void RGB(void);
+void LED_RUNNING(void);
+void LED_CLOSE(void);
+void KEY1_change(void);
 //void GizWits_WiFiStatueHandle(uint16_t wifiStatue);
 
 #endif

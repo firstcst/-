@@ -13,7 +13,7 @@
 *
 *********************************************************/
 #include "Hal_led/Hal_led.h"
-
+#include "Hal_key/Hal_key.h"
 
 void LED_GPIO_Init(void)
 {
@@ -39,16 +39,6 @@ void LED_GPIO_Init(void)
     LED_OFF(LED2);
     LED_OFF(LED3);
     LED_OFF(LED4);
-/*		while(1)
-		{
-		int i;
-			for(i=0;i<4;i++)
-			{
-			LED_ON(NUM[i]);
-			Delay_us(1000000);
-			LED_OFF(NUM[i]);		
-			}
-		}  */
 }
 
 void LED_ON(uint8_t LEDNUM)

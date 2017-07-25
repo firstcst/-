@@ -17,9 +17,7 @@
 
 
 #include "gokit.h"
-#define  DELAY 				Delay_key(300);
-#define RETURN_KEY      if( Get_Key()==1) return
-#define BREAK_KEY       if( Get_Key()==1) break
+
 /*Global Variable*/
 uint32_t ReportTimeCount = 0;
 uint8_t gaterSensorFlag = 0;
@@ -38,7 +36,8 @@ ReadTypeDef_t	ReadTypeDef;
   * @param  None
   * @retval None
   */
-uint8_t sul=0;   //LED1~4状态
+uint8_t led_control = 0;
+uint8_t key_pre = 0;
 int main(void)
 {
 	uint8_t p0_control_buf[MAX_P0_LEN];		
@@ -46,47 +45,14 @@ int main(void)
 	HW_Init();
 	Printf_SystemRccClocks();
 	SW_Init();
- // uint8_t Key1_count=0;	
 	while(1)
-	{
-	uint8_t Key_return=0;
-	Key_return = ReadKeyValue();	
-if(Key_return & KEY_UP)
-	{
-		if(Key_return & PRESS_KEY1)
-		{	
-//		  Key1_count++;
-			sul=~sul;
-		}
-     if(!sul)
-		{
-						Motor_status(5);//关马达
-			      LED_RGB_Control(0,0,0);
-		      for(;;)
-			{
-				    BREAK_KEY;
-		        LED_RUNNING();//开跑马灯
-				    BREAK_KEY;
-						printf("the LED IS RUNNING ok!\r\n");
-			}
-
-		}
-		else
-		{
-			LED_CLOSE();
-			Motor_status(6);// 开马达
-			 for(;;)
-			{
-				    BREAK_KEY;
-		        RGB();
-				    BREAK_KEY;
-//				    if( Get_Key()==1) break;
-				printf("the EGB&MOTOR IS RUNNING ok!\r\n");
-			}
-		}
+	{		
+		HANDLE_Key_After_Press();
+		//Delay_ms(2000);
+		//KEY_Handle();
 	}
-}
-}
+ //  	KEY_Handle();
+ }
 /** @addtogroup GizWits_HW_Init
   * @{
   */
@@ -293,13 +259,15 @@ void GizWits_GatherSensorData(void)
 *******************************************************************************/
 void KEY_Handle(void)
 {
-	uint8_t Key_return;
+	uint8_t Key_return =0;	
 	Key_return = ReadKeyValue();	
-if(Key_return & KEY_UP)
+	printf("################### KEY_Handle--->ReadKeyValue()= %d  \r\n", Key_return);
+	printf("################### KEY_Handle---->Get_Key()=%d       \r\n",Get_Key());
+	if(Key_return & KEY_UP)
 	{
 		if(Key_return & PRESS_KEY1)
-		{	
-
+		{
+  		printf("KEY1 PRESS\r\n");
 		}
 		if(Key_return & PRESS_KEY2)
 		{
@@ -312,8 +280,9 @@ if(Key_return & KEY_UP)
 			GizWits_D2WConfigCmd(SoftAp_Mode);
 			printf("(SoftAp_Mode start\r\n");
 			NetConfigureFlag = 1;
-		}		
- }		
+		}				
+}
+
 	if(Key_return & KEY_LONG)
 	{
 		if(Key_return & PRESS_KEY1)
@@ -335,6 +304,20 @@ if(Key_return & KEY_UP)
 			NetConfigureFlag = 1;
 		}
 	}
+/*  if(!(Key_return))
+	{
+	 	uint8_t i;
+		uint8_t NUM[]={LED1,LED2,LED3,LED4};	
+    while(1)
+		{
+			for(i=0;i<4;i++)
+				{
+			LED_ON(NUM[i]);
+			Delay_us(1000000);
+			LED_OFF(NUM[i]);
+				}
+		}
+	}  */
 }
 /*******************************************************************************
 * Function Name  : GizWits_WiFiStatueHandle
@@ -353,51 +336,104 @@ void GizWits_WiFiStatueHandle(uint16_t wifiStatue)
 		LED_RGB_Control(0,0,0);
 	}
 }
-/****RGB点亮****/
-void RGB(void)
+/******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/
+
+/**
+** 按键处理函数，根据上次状态来确定是点亮马灯还是 启动马达和RGB—LED
+** 
+** 
+* 参数：num ,代表多个个10ms
+**/
+void HANDLE_Key_After_Press(void)
 {
-			 RETURN_KEY;
-			LED_RGB_Control(255,0,0);			//红色
-				  DELAY;
-			 RETURN_KEY;
-			LED_RGB_Control(0,0,0);
-			    DELAY;
-			 RETURN_KEY;
-			LED_RGB_Control(0,0,255);				//蓝色
-				  DELAY;
-			 RETURN_KEY;
-			LED_RGB_Control(0,0,0);
-			    DELAY;			
-			 RETURN_KEY;
-			LED_RGB_Control(0,128,0);     //绿色
-			    DELAY;
-			 RETURN_KEY;
-			LED_RGB_Control(0,0,0);
-			    DELAY;	
-			 RETURN_KEY;
-}
-/** LED1~4循环点亮**/
-void LED_RUNNING(void)
-{
-	   uint8_t i;
-     for(i=1;i<5;i++)
-		 {
-         BREAK_KEY;
-		     LED_ON(i);
-         BREAK_KEY;
-			   DELAY;
-         BREAK_KEY;
-			   LED_OFF(i);
-         BREAK_KEY;
+	if(!led_control)
+		{
+			printf("######HANDLE_Key_After_Press  status:1111 Open LED  close motor start \r\n");
+			Motor_status(5);//关马达
+		  LED_RUNNING();//开跑马灯
+			printf("######HANDLE_Key_After_Press  status:1111 Open LED  close motor end \r\n");
 		}
+		else
+		{
+			printf("######HANDLE_Key_After_Press  status:2222 Open motor  close RGB start \r\n");
+			Motor_status(6);// 开马达
+			RGB();          // 开RGB灯	
+			printf("######HANDLE_Key_After_Press  status:2222 Open motor  close RGB end \r\n");
+		//}
+	}
 }
-/** LED1~4熄灭**/
-void LED_CLOSE(void)
+
+/**
+** 延时函数，在延时函数过程中增加了按键状态的判断，
+** 当有key1按键按下的时候，执行按键处理函数HANDLE_Key_After_Press()
+* 参数：num ,代表多个个10ms
+**/
+void DELAY_TIME_Brake(uint8_t  num)
+{
+	for(uint8_t i=0; i<num; i++)
+	{
+		Delay_ms(10);
+		
+		uint8_t Key_return =0;	
+		Key_return = ReadKeyValue();			
+		if(Key_return & KEY_UP)// 以前用Get_Key函数来判断key1键的按下，错误的
+													//  其实Get_Key返回值为1的时候用来判断key1键的按下并不准确,整个按键动作,会返回好几次Get_Key为1
+		{
+			if(Key_return & PRESS_KEY1)
+			{
+				//key_pre = Get_Key();
+				printf("####DELAY_TIME_Brake  now Get_Key= %d\r\n",Get_Key());
+				led_control=~led_control;
+				printf("####DELAY_TIME_Brake  now led_control= %d\r\n",led_control);
+				Delay_ms(200);//按键200ms后才处理动作
+				HANDLE_Key_After_Press();//此时有按键，先去处理按键事件
+				break;
+			}
+
+		}		
+	}
+}
+
+void RGB(void)
 {
 	  uint8_t i;
 		for(i=1;i<5;i++)
 			{
 			  LED_OFF(i);
 			}
+//		printf("the second key number is %d\r\n",Key);
+			LED_RGB_Control(255,0,0);			
+//				  Delay_ms(150);
+			DELAY_TIME_Brake(15);
+
+			//LED_RGB_Control(0,0,0);
+			   // Delay_ms(150);
+			
+			LED_RGB_Control(255,255,0);					
+				  //Delay_ms(150);
+			DELAY_TIME_Brake(15);
+			 
+			//LED_RGB_Control(0,0,0);
+			//Delay_ms(150);			
+			 
+			LED_RGB_Control(0,128,0);
+			    //Delay_ms(150);
+			//Delay_ms(150);
+			DELAY_TIME_Brake(15);
+			
+			//LED_RGB_Control(0,0,0);
 }
-/******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/
+
+
+/** 跑马灯 LED1~4循环点亮**/
+void LED_RUNNING(void)
+{
+	   uint8_t i;
+     for(i=1;i<5;i++)
+		 {
+		  LED_ON(i);
+			DELAY_TIME_Brake(50);
+			LED_OFF(i);
+			DELAY_TIME_Brake(50); 
+		}
+}

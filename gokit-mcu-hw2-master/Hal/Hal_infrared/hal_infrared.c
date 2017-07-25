@@ -30,10 +30,14 @@ bool IR_Handle(void)
 {
     if(GPIO_ReadInputDataBit(Infrared_GPIO_PORT, Infrared_GPIO_PIN))
     {
+//			printf("红外线感应到有物体靠近!\r\n");
+//			Motor_status(6);
         return 0;
     }
     else
     {
+//			Motor_status(5);
+//			printf("红外线感应到有物体已离开!\r\n");
         return 1;
     }
 }

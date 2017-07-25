@@ -91,7 +91,7 @@ void TIM3_Int_Init(u16 arr,u16 psc)
 
 uint8_t Get_Key(void)
 {
-    uint8_t ReadKey;
+    uint8_t ReadKey=0;
 
     if(!GPIO_ReadInputDataBit(GPIO_KEY1_PORT,GPIO_KEY1_PIN))
     {

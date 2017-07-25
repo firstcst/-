@@ -6,9 +6,9 @@
 * @version   V2.3
 * @date      2015-07-06
 *
-* @brief     ?ú???? ???a???üó2?t??éú
+* @brief     机智云 只为智能硬件而生
 *            Gizwits Smart Cloud  for Smart Products
-*            á′?ó|???μ|?a·?|?Dá￠|°2è?|×?óD|×?óé|éúì?
+*            链接|增值|开放|中立|安全|自有|自由|生态
 *            www.gizwits.com
 *
 *********************************************************/
@@ -17,9 +17,7 @@
 
 
 #include "gokit.h"
-#define  DELAY 				Delay_key(300);
-#define RETURN_KEY      if( Get_Key()==1) return
-#define BREAK_KEY       if( Get_Key()==1) break
+
 /*Global Variable*/
 uint32_t ReportTimeCount = 0;
 uint8_t gaterSensorFlag = 0;
@@ -38,54 +36,48 @@ ReadTypeDef_t	ReadTypeDef;
   * @param  None
   * @retval None
   */
-uint8_t sul=0;   //LED1~4状态
 int main(void)
 {
-	uint8_t p0_control_buf[MAX_P0_LEN];		
+	uint8_t p0_control_buf[MAX_P0_LEN];
+  uint8_t i;
+	uint8_t Key_return=0;
+  uint8_t NUM[]={LED1,LED2,LED3,LED4};		
 	SystemInit();	
 	HW_Init();
 	Printf_SystemRccClocks();
-	SW_Init();
- // uint8_t Key1_count=0;	
+	SW_Init();	
+	printf("Key_return0=%d\r\n",Key_return);
 	while(1)
 	{
-	uint8_t Key_return=0;
-	Key_return = ReadKeyValue();	
-if(Key_return & KEY_UP)
-	{
-		if(Key_return & PRESS_KEY1)
-		{	
-//		  Key1_count++;
-			sul=~sul;
-		}
-     if(!sul)
+		Key_return = ReadKeyValue();
+    printf("Key_return=%d\r\n",Key_return);		
+		KEY_Handle();
+    if(Key_return==0)
 		{
-						Motor_status(5);//关马达
-			      LED_RGB_Control(0,0,0);
-		      for(;;)
-			{
-				    BREAK_KEY;
-		        LED_RUNNING();//开跑马灯
-				    BREAK_KEY;
-						printf("the LED IS RUNNING ok!\r\n");
-			}
-
-		}
-		else
+			printf("now Key_return is 0!\r\n");
+			for(i=0;i<4;i++)
+				{
+			LED_ON(NUM[i]);
+			Delay_us(1000000);
+			LED_OFF(NUM[i]);
+				}
+	  }
+//		GizWits_MessageHandle(p0_control_buf, sizeof(WirteTypeDef_t));
+/*		if(p0Flag == 1)
 		{
-			LED_CLOSE();
-			Motor_status(6);// 开马达
-			 for(;;)
-			{
-				    BREAK_KEY;
-		        RGB();
-				    BREAK_KEY;
-//				    if( Get_Key()==1) break;
-				printf("the EGB&MOTOR IS RUNNING ok!\r\n");
-			}
+			memcpy((uint8_t *)&WirteTypeDef, p0_control_buf, sizeof(WirteTypeDef_t));
+			GizWits_ControlDeviceHandle();
+			GizWits_DevStatusUpgrade((uint8_t *)&ReadTypeDef, 10*60*1000, 1);
+			p0Flag =0;
 		}
+        if(gaterSensorFlag != 0)
+        {
+            GizWits_GatherSensorData(); 
+            gaterSensorFlag = 0;
+        } */
+ //       GizWits_DevStatusUpgrade((uint8_t *)&ReadTypeDef, 10*60*1000, 0);
 	}
-}
+		
 }
 /** @addtogroup GizWits_HW_Init
   * @{
@@ -293,13 +285,25 @@ void GizWits_GatherSensorData(void)
 *******************************************************************************/
 void KEY_Handle(void)
 {
-	uint8_t Key_return;
+	uint8_t Key_return =0;	
 	Key_return = ReadKeyValue();	
-if(Key_return & KEY_UP)
+
+	if(Key_return & KEY_UP)
 	{
 		if(Key_return & PRESS_KEY1)
-		{	
-
+		{
+#ifdef PROTOCOL_DEBUG
+  				printf("KEY1 PRESS\r\n");
+//			for(;;)
+//			{
+						LED_RGB_Control(255, 0, 0);
+						Delay_us(6000000);
+						LED_RGB_Control(0, 128, 0);
+						//Delay_us(3000000);
+						Motor_status(6);
+			printf("Motor run ok\r\n");
+//			}
+#endif
 		}
 		if(Key_return & PRESS_KEY2)
 		{
@@ -312,8 +316,9 @@ if(Key_return & KEY_UP)
 			GizWits_D2WConfigCmd(SoftAp_Mode);
 			printf("(SoftAp_Mode start\r\n");
 			NetConfigureFlag = 1;
-		}		
- }		
+		}				
+}
+
 	if(Key_return & KEY_LONG)
 	{
 		if(Key_return & PRESS_KEY1)
@@ -335,6 +340,20 @@ if(Key_return & KEY_UP)
 			NetConfigureFlag = 1;
 		}
 	}
+/*  if(!(Key_return))
+	{
+	 	uint8_t i;
+		uint8_t NUM[]={LED1,LED2,LED3,LED4};	
+    while(1)
+		{
+			for(i=0;i<4;i++)
+				{
+			LED_ON(NUM[i]);
+			Delay_us(1000000);
+			LED_OFF(NUM[i]);
+				}
+		}
+	}  */
 }
 /*******************************************************************************
 * Function Name  : GizWits_WiFiStatueHandle
@@ -352,52 +371,5 @@ void GizWits_WiFiStatueHandle(uint16_t wifiStatue)
 		NetConfigureFlag = 0;
 		LED_RGB_Control(0,0,0);
 	}
-}
-/****RGB点亮****/
-void RGB(void)
-{
-			 RETURN_KEY;
-			LED_RGB_Control(255,0,0);			//红色
-				  DELAY;
-			 RETURN_KEY;
-			LED_RGB_Control(0,0,0);
-			    DELAY;
-			 RETURN_KEY;
-			LED_RGB_Control(0,0,255);				//蓝色
-				  DELAY;
-			 RETURN_KEY;
-			LED_RGB_Control(0,0,0);
-			    DELAY;			
-			 RETURN_KEY;
-			LED_RGB_Control(0,128,0);     //绿色
-			    DELAY;
-			 RETURN_KEY;
-			LED_RGB_Control(0,0,0);
-			    DELAY;	
-			 RETURN_KEY;
-}
-/** LED1~4循环点亮**/
-void LED_RUNNING(void)
-{
-	   uint8_t i;
-     for(i=1;i<5;i++)
-		 {
-         BREAK_KEY;
-		     LED_ON(i);
-         BREAK_KEY;
-			   DELAY;
-         BREAK_KEY;
-			   LED_OFF(i);
-         BREAK_KEY;
-		}
-}
-/** LED1~4熄灭**/
-void LED_CLOSE(void)
-{
-	  uint8_t i;
-		for(i=1;i<5;i++)
-			{
-			  LED_OFF(i);
-			}
 }
 /******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

@@ -24,8 +24,8 @@
 
 #define LED1             0X01
 #define LED2             0X02
-#define LED3             0X04
-#define LED4             0X08
+#define LED3             0X03
+#define LED4             0X04
 
 
 void LED_GPIO_Init(void);
