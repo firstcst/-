@@ -19,6 +19,7 @@
 #include "Hal_rgb_led/Hal_rgb_led.h"
 #include "delay.h"
 #include "Hal_temp_hum/Hal_temp_hum.h"
+#include "Hal_key/hal_key.h"
 #define  DELAY 				Delay_Infrared(300);
 #define RETURN_Infrared      if(GPIO_ReadInputDataBit(Infrared_GPIO_PORT, Infrared_GPIO_PIN)) return
 #define BREAK_Infrared      if(GPIO_ReadInputDataBit(Infrared_GPIO_PORT, Infrared_GPIO_PIN)) break
@@ -34,16 +35,19 @@ void IR_Init(void)
 }
 bool IR_Handle(void)
 {
-    if(GPIO_ReadInputDataBit(Infrared_GPIO_PORT, Infrared_GPIO_PIN))    //判定是否有物体遮挡，是为0，否为1。
+//    if(GPIO_ReadInputDataBit(Infrared_GPIO_PORT, Infrared_GPIO_PIN))    //判定是否有物体遮挡，是为0，否为1
+	    if(Infrared_status())
     {
 //        return 0;
 			printf("NO some objects are close to us!\r\n");
 			Motor_status(5);
 			LED_RGB_Control(0,0,0);
+			LED_RUNNING();//开跑马灯
     }
     else
     {
 			printf("Some objects are close to us!\r\n");
+			LED_CLOSE();
 			Motor_status(6);
 			for(;;)
 			{
@@ -76,4 +80,15 @@ void RGB_Infrared(void)
 			LED_RGB_Control(0,0,0);
 			    DELAY;	
 			 RETURN_Infrared;
+}
+bool Infrared_status(void)
+{
+	if(GPIO_ReadInputDataBit(Infrared_GPIO_PORT, Infrared_GPIO_PIN))
+	{
+			return 1;
+	}
+	else
+	{
+			return 0;
+	}
 }

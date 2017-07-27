@@ -36,3 +36,4 @@
 .\obj\hal_infrared.o: ..\User\delay.h
 .\obj\hal_infrared.o: ..\Hal\Hal_temp_hum/Hal_temp_hum.h
 .\obj\hal_infrared.o: ..\Hal\Hal_temp_hum/sys.h
+.\obj\hal_infrared.o: ..\Hal\Hal_key/hal_key.h

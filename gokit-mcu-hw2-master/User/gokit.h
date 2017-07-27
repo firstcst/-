@@ -12,7 +12,9 @@
 #include "ringbuffer.h"
 #include "Protocol.h"
 #include <string.h>
-
+#define  DELAY 				Delay_key(300);
+#define RETURN_KEY      if( Get_Key()==1) return
+#define BREAK_KEY       if( Get_Key()==1) break
 __packed	typedef struct	
 {
 	uint8_t				LED_Cmd;

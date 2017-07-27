@@ -17,9 +17,6 @@
 
 
 #include "gokit.h"
-#define  DELAY 				Delay_key(300);
-#define RETURN_KEY      if( Get_Key()==1) return
-#define BREAK_KEY       if( Get_Key()==1) break
 /*Global Variable*/
 uint32_t ReportTimeCount = 0;
 uint8_t gaterSensorFlag = 0;
@@ -46,10 +43,6 @@ int main(void)
 	HW_Init();
 	Printf_SystemRccClocks();
 	SW_Init();
-/*	while(1)
-	{
-	IR_Handle();
-	}*/
 	#if 1
 	while(1)
 	{
@@ -68,8 +61,10 @@ if(Key_return & KEY_UP)
 			      LED_RGB_Control(0,0,0);
 		      for(;;)
 			{
+				if(Infrared_status()==0) break;
 				    BREAK_KEY;
 		        LED_RUNNING();//开跑马灯
+				if(Infrared_status()==0) break;
 				    BREAK_KEY;
 						printf("the LED IS RUNNING ok!\r\n");
 			}
@@ -80,15 +75,17 @@ if(Key_return & KEY_UP)
 			Motor_status(6);// 开马达
 			 for(;;)
 			{
+				if(Infrared_status()==0) break;
 				    BREAK_KEY;
 		        RGB();
+				if(Infrared_status()==0) break;
 				    BREAK_KEY;
 //				    if( Get_Key()==1) break;
 				printf("the EGB&MOTOR IS RUNNING ok!\r\n");
 			}
 		}
 	}
-			IR_Handle();
+	IR_Handle();
 }
 	#endif
 }
@@ -361,24 +358,31 @@ void GizWits_WiFiStatueHandle(uint16_t wifiStatue)
 /****RGB点亮****/
 void RGB(void)
 {
+	if(Infrared_status()==0) return;
 			 RETURN_KEY;
 			LED_RGB_Control(255,0,0);			//红色
 				  DELAY;
+	if(Infrared_status()==0) return;
 			 RETURN_KEY;
 			LED_RGB_Control(0,0,0);
 			    DELAY;
+	if(Infrared_status()==0) return;
 			 RETURN_KEY;
 			LED_RGB_Control(0,0,255);				//蓝色
 				  DELAY;
+	if(Infrared_status()==0) return;
 			 RETURN_KEY;
 			LED_RGB_Control(0,0,0);
-			    DELAY;			
+			    DELAY;
+	if(Infrared_status()==0) return;	
 			 RETURN_KEY;
 			LED_RGB_Control(0,128,0);     //绿色
 			    DELAY;
+	if(Infrared_status()==0) return;
 			 RETURN_KEY;
 			LED_RGB_Control(0,0,0);
 			    DELAY;	
+	if(Infrared_status()==0) return;
 			 RETURN_KEY;
 }
 /** LED1~4循环点亮**/
@@ -387,13 +391,17 @@ void LED_RUNNING(void)
 	   uint8_t i;
      for(i=1;i<5;i++)
 		 {
+			 if(Infrared_status()==0) break;
          BREAK_KEY;
 		     LED_ON(i);
+			 if(Infrared_status()==0) break;
          BREAK_KEY;
 			   DELAY;
+			 if(Infrared_status()==0) break;
          BREAK_KEY;
 			   LED_OFF(i);
          BREAK_KEY;
+			 if(Infrared_status()==0) break;
 		}
 }
 /** LED1~4熄灭**/

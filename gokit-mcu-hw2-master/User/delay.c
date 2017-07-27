@@ -69,6 +69,7 @@ void Delay_key(uint16_t nms)
 		{  
 			 temp = SysTick->CTRL;//时间到,该位将被硬件置1,但被查询后自动清0
 			if(Get_Key()) break;
+			if(Infrared_status()==0) break;
 		}  
 		while(temp & 0x01 && !(temp &(1<<16)));//查询
 	
