@@ -12,7 +12,9 @@
 #include "ringbuffer.h"
 #include "Protocol.h"
 #include <string.h>
-
+#define  DELAY 				Delay_key(300);
+#define RETURN_KEY      if( Get_Key()==1) return
+#define BREAK_KEY       if( Get_Key()==1) break
 __packed	typedef struct	
 {
 	uint8_t				LED_Cmd;
@@ -44,6 +46,10 @@ void GizWits_GatherSensorData(void);
 void GizWits_ControlDeviceHandle(void);
 void SW_Init(void);
 void KEY_Handle(void);
+void RGB(void);
+void LED_RUNNING(void);
+void LED_CLOSE(void);
+void KEY1_change(void);
 //void GizWits_WiFiStatueHandle(uint16_t wifiStatue);
 
 #endif

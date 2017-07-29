@@ -30,3 +30,10 @@
 .\obj\hal_infrared.o: ..\Lib\STM32F10x_StdPeriph_Driver\inc\misc.h
 .\obj\hal_infrared.o: ..\Hal\Hal_infrared/Hal_infrared.h
 .\obj\hal_infrared.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\obj\hal_infrared.o: ..\Hal\Hal_motor/Hal_motor.h
+.\obj\hal_infrared.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\obj\hal_infrared.o: ..\Hal\Hal_rgb_led/Hal_rgb_led.h
+.\obj\hal_infrared.o: ..\User\delay.h
+.\obj\hal_infrared.o: ..\Hal\Hal_temp_hum/Hal_temp_hum.h
+.\obj\hal_infrared.o: ..\Hal\Hal_temp_hum/sys.h
+.\obj\hal_infrared.o: ..\Hal\Hal_key/hal_key.h

@@ -15,7 +15,14 @@
 
 #include <stm32f10x.h>
 #include "Hal_infrared/Hal_infrared.h"
-
+#include "Hal_motor/Hal_motor.h"
+#include "Hal_rgb_led/Hal_rgb_led.h"
+#include "delay.h"
+#include "Hal_temp_hum/Hal_temp_hum.h"
+#include "Hal_key/hal_key.h"
+#define  DELAY 				Delay_Infrared(300);
+#define RETURN_Infrared      if(GPIO_ReadInputDataBit(Infrared_GPIO_PORT, Infrared_GPIO_PIN)) return
+#define BREAK_Infrared      if(GPIO_ReadInputDataBit(Infrared_GPIO_PORT, Infrared_GPIO_PIN)) break
 void IR_Init(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
@@ -28,12 +35,60 @@ void IR_Init(void)
 }
 bool IR_Handle(void)
 {
-    if(GPIO_ReadInputDataBit(Infrared_GPIO_PORT, Infrared_GPIO_PIN))
+//    if(GPIO_ReadInputDataBit(Infrared_GPIO_PORT, Infrared_GPIO_PIN))    //判定是否有物体遮挡，是为0，否为1
+	    if(Infrared_status())
     {
-        return 0;
+//        return 0;
+			printf("NO some objects are close to us!\r\n");
+			Motor_status(5);
+			LED_RGB_Control(0,0,0);
+			LED_RUNNING();//开跑马灯
     }
     else
     {
-        return 1;
+			printf("Some objects are close to us!\r\n");
+			LED_CLOSE();
+			Motor_status(6);
+			for(;;)
+			{
+			BREAK_Infrared;	
+			RGB_Infrared();
+//			BREAK_Infrared;
+			}
+//        return 1;
     }
+}
+/****RGB点亮****/
+void RGB_Infrared(void)
+{
+			 RETURN_Infrared;
+			LED_RGB_Control(255,0,0);			//红色
+				  DELAY;
+			 RETURN_Infrared;
+			LED_RGB_Control(0,0,0);
+			    DELAY;
+			 RETURN_Infrared;
+			LED_RGB_Control(0,0,255);				//蓝色
+				  DELAY;
+			 RETURN_Infrared;
+			LED_RGB_Control(0,0,0);
+			    DELAY;			
+			 RETURN_Infrared;
+			LED_RGB_Control(0,128,0);     //绿色
+			    DELAY;
+			 RETURN_Infrared;
+			LED_RGB_Control(0,0,0);
+			    DELAY;	
+			 RETURN_Infrared;
+}
+bool Infrared_status(void)
+{
+	if(GPIO_ReadInputDataBit(Infrared_GPIO_PORT, Infrared_GPIO_PIN))
+	{
+			return 1;
+	}
+	else
+	{
+			return 0;
+	}
 }

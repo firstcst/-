@@ -14,7 +14,9 @@
 *********************************************************/
 
 #include "delay.h"
-
+#include "Hal_key/Hal_key.h"
+#include <stm32f10x.h>
+#include "Hal_infrared/Hal_infrared.h"
 static uint8_t  fac_us=0;																		//us延时倍乘数
 static uint16_t fac_ms=0;																		//ms延时倍乘数
 
@@ -26,7 +28,7 @@ void Delay_Init(uint8_t SYSCLK)
 }			    								   
 void Delay_us(uint32_t nus)
 {		
-		uint32_t temp;  
+		uint32_t temp;
 		SysTick->LOAD = nus*fac_us;  //延时10us,10*9 = 90,装到load寄存器中
 		SysTick->VAL=0x00;//计数器清0
 		SysTick->CTRL = 0x01;//配置异常生效,也就是计数器倒数到0时发出异常通知
@@ -36,7 +38,7 @@ void Delay_us(uint32_t nus)
 		}  
 		while(temp & 0x01 && !(temp &(1<<16)));//查询
 		SysTick->CTRL = 0x00;//关闭定时器
-		SysTick->VAL = 0x00;//清空val,清空定时器
+		SysTick->VAL = 0x00;//清空val,清空定时器	
 }
 
 
@@ -49,9 +51,46 @@ void Delay_ms(uint16_t nms)
 		do  
 		{  
 			 temp = SysTick->CTRL;//时间到,该位将被硬件置1,但被查询后自动清0
+				return;
 		}  
 		while(temp & 0x01 && !(temp &(1<<16)));//查询
 	
 		SysTick->CTRL = 0x00;//关闭定时器
 		SysTick->VAL = 0x00;//清空val,清空定时器
 } 
+
+void Delay_key(uint16_t nms)
+{	 		  	  
+		uint32_t temp;  
+		SysTick->LOAD = nms*fac_ms;//延时10ms,10*9 = 90,装到load寄存器中
+		SysTick->VAL=0x00;//计数器清0
+		SysTick->CTRL = 0x01;//配置异常生效,也就是计数器倒数到0时发出异常通知
+		do  
+		{  
+			 temp = SysTick->CTRL;//时间到,该位将被硬件置1,但被查询后自动清0
+			if(Get_Key()) break;
+			if(Infrared_status()==0) break;
+		}  
+		while(temp & 0x01 && !(temp &(1<<16)));//查询
+	
+		SysTick->CTRL = 0x00;//关闭定时器
+		SysTick->VAL = 0x00;//清空val,清空定时器
+} 
+
+void Delay_Infrared(uint16_t nms)
+{	 		  	  
+		uint32_t temp;  
+		SysTick->LOAD = nms*fac_ms;//延时10ms,10*9 = 90,装到load寄存器中
+		SysTick->VAL=0x00;//计数器清0
+		SysTick->CTRL = 0x01;//配置异常生效,也就是计数器倒数到0时发出异常通知
+		do  
+		{  
+			 temp = SysTick->CTRL;//时间到,该位将被硬件置1,但被查询后自动清0
+			if(GPIO_ReadInputDataBit(Infrared_GPIO_PORT, Infrared_GPIO_PIN))
+				return;
+		}  
+		while(temp & 0x01 && !(temp &(1<<16)));//查询
+	
+		SysTick->CTRL = 0x00;//关闭定时器
+		SysTick->VAL = 0x00;//清空val,清空定时器
+}
